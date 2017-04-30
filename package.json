@@ -1,0 +1,27 @@
+{
+  "name": "spaceapps",
+  "version": "1.0.0",
+  "description": "track satellites and stuff yo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dave",
+  "license": "MIT",
+  "dependencies": {
+    "angular": "^1.6.4",
+    "angular-ui-bootstrap": "^2.5.0",
+    "body-parser": "^1.17.1",
+    "bootstrap": "^3.3.7",
+    "express": "^4.15.2",
+    "http": "0.0.0",
+    "jquery": "^3.2.1",
+    "moment": "^2.18.1",
+    "q": "^1.5.0",
+    "satellite.js": "^1.3.0",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}

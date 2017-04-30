@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="spaceApp">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+
+  <title>Space Jockey</title>
+  <style>
+      @import url(/node_modules/cesium/Build/Cesium/Widgets/widgets.css);
+      @import url(/node_modules/bootstrap/dist/css/bootstrap.css);
+      @import url(/node_modules/bootstrap/dist/css/bootstrap-theme.css);
+      @import url('https://fonts.googleapis.com/css?family=Josefin+Sans');
+      html, body, #cesiumContainer {
+          width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+          font-family: 'Josefin Sans', sans-serif;
+      }
+      .cesium-animation-svgText, .cesium-timeline-main, .cesium-infoBox-visible, .cesium-infoBox-description{
+        font-family: 'Josefin Sans', sans-serif;
+      }
+      .cesium-infoBox-close{
+        font-family: sans-serif;
+      }
+      .btn{
+        line-height: 0.9em;
+      }
+      [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+        display: none !important;
+      }
+      .cesium-viewer-geocoderContainer,.cesium-viewer-bottom .cesium-widget-credits,.cesium-navigationHelpButton-wrapper{
+        display: none;
+      }
+      h1{
+        font-family: 'Josefin Sans', sans-serif;
+        position: fixed;
+        color: #FFF;
+        z-index: 5;
+        width: calc(100% - 600px);
+        text-align: center;
+        font-size: 30px;
+        letter-spacing: 8px;
+        text-transform: uppercase;
+        margin: 20px 300px;
+      }
+      h1 span{
+      font-size: 40px;
+      }
+      #controlElements{
+        position: fixed;
+        z-index: 10;
+        margin: 7px;
+      }
+      #controlElements .satMenu{
+        background: rgba(100, 100, 100, 0.5);
+        padding: 10px;
+        border-radius: 4px 15px;
+        color: #DDD;
+      }
+      #controlElements .form-group{
+        width: 115px;
+      }
+      #loading{
+        background: #000;
+        z-index: 20;
+        height: 100%;
+        width: 100%;
+        position: fixed;
+      }
+      .loading-text{
+        color: #000;
+        text-align: center;
+        top: calc(50% - 45px);
+        position: relative;
+        font-size: 70px;
+      }
+      .rocket{
+        position: absolute;
+        font-size: 90px;
+        left: calc(50% - 48px);
+        transform: rotate(-52deg);
+        top: -160px;
+        font-family: Helvetica Neue, Helvetica, Arial;
+      }
+      .rocket-wrapper{
+        animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both infinite;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+      }
+      .fire {
+        animation: animation 1s ease-in-out infinite alternate;
+        -moz-animation: animation 1s ease-in-out infinite alternate;
+        -webkit-animation: animation 1s ease-in-out infinite alternate;
+        -o-animation: animation 1s ease-in-out infinite alternate;
+      }
+
+      .burn {
+        animation: animation .65s ease-in-out infinite alternate;
+        -moz-animation: animation .65s ease-in-out infinite alternate;
+        -webkit-animation: animation .65s ease-in-out infinite alternate;
+        -o-animation: animation .65s ease-in-out infinite alternate;
+      }
+
+      @keyframes animation{
+      0% {text-shadow: 0 0 20px #fefcc9,
+        10px -10px 30px #feec85,
+        -20px -20px 40px #ffae34,
+        20px -40px 50px #ec760c,
+        -20px -60px 60px #cd4606,
+        0 -80px 70px #973716,
+        10px -90px 80px #451b0e;}
+      100% {text-shadow: 0 0 20px #fefcc9,
+        10px -10px 30px #fefcc9,
+        -20px -20px 40px #feec85,
+        22px -42px 60px #ffae34,
+        -22px -58px 50px #ec760c,
+        0 -82px 80px #cd4606,
+        10px -90px 80px  #973716;}
+      }
+
+      @-moz-keyframes animation{
+      0% {text-shadow: 0 0 20px #fefcc9,
+        10px -10px 30px #feec85,
+        -20px -20px 40px #ffae34,
+        20px -40px 50px #ec760c,
+        -20px -60px 60px #cd4606,
+        0 -80px 70px #973716,
+        10px -90px 80px #451b0e;}
+      100% {text-shadow: 0 0 20px #fefcc9,
+        10px -10px 30px #fefcc9,
+        -20px -20px 40px #feec85,
+        22px -42px 60px #ffae34,
+        -22px -58px 50px #ec760c,
+        0 -82px 80px #cd4606,
+        10px -90px 80px  #973716;}
+      }
+
+      @-webkit-keyframes animation{
+      0% {text-shadow: 0 0 20px #fefcc9,
+        10px -10px 30px #feec85,
+        -20px -20px 40px #ffae34,
+        20px -40px 50px #ec760c,
+        -20px -60px 60px #cd4606,
+        0 -80px 70px #973716,
+        10px -90px 80px #451b0e;}
+      100% {text-shadow: 0 0 20px #fefcc9,
+        10px -10px 30px #fefcc9,
+        -20px -20px 40px #feec85,
+        22px -42px 60px #ffae34,
+        -22px -58px 50px #ec760c,
+        0 -82px 80px #cd4606,
+        10px -90px 80px  #973716;}
+      }
+
+      @keyframes shake {
+        10%, 90% {
+          transform: translate3d(-1px, 0, 0);
+        }
+        20%, 80% {
+          transform: translate3d(2px, 0, 0);
+        }
+        30%, 50%, 70% {
+          transform: translate3d(-4px, 0, 0);
+        }
+        40%, 60% {
+          transform: translate3d(4px, 0, 0);
+        }
+      }
+  </style>
+</head>
+<body>
+  <div ng-controller="ControlElementsController" ng-cloak>
+    <h1><span>S</span>hadowfax</h1>
+    <div id="loading" ng-if="loading">
+      <div class="loading-text">
+        <div class="rocket-wrapper"><div class="rocket">🚀</div></div>
+        <span class="fire">L</span>
+        <span class="burn">O</span>
+        <span class="fire">A</span>
+        <span class="burn">D</span>
+        <span class="fire">I</span>
+        <span class="burn">N</span>
+        <span class="fire">G</span>
+      </div>
+    </div>
+    <div id="controlElements">
+      <button id="single-button" type="button" class="btn btn-default" ng-model="menuOpen" uib-btn-checkbox>
+        <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+      </button>
+      <div ng-if="menuOpen" class="satMenu">
+        <ul class="list-unstyled">
+          <li><input type="checkbox" ng-model="selectAllState" ng-click="selectAll()"> <i>Select All</i></li>
+          <li ng-repeat="sat in satellites"><input type="checkbox" ng-model="sat.showOnMap"> {{sat.name}}</li>
+        </ul>
+
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Duration" ng-model="vm.duration">
+            <div class="input-group-addon">hrs</div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" ng-click="loadSats()">Load Satellite(s)</button>
+      </div>
+    </div>
+  </div>
+  <div id="cesiumContainer"></div>
+
+  <script src="/node_modules/cesium/Build/Cesium/Cesium.js"></script>
+  <script src="/node_modules/jquery/dist/jquery.js"></script>
+  <script src="/node_modules/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="/node_modules/underscore/underscore.js"></script>
+  <script src="/node_modules/angular/angular.js"></script>
+  <script src="/node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js"></script>
+  <script src="/node_modules/q/q.js"></script>
+  <script>
+    var spaceApp = angular.module('spaceApp', ['ui.bootstrap']);
+  </script>
+  <script src="/ControlElementsController.js"></script>
+  <script src="/satelliteService.js"></script>
+</body>
+</html>
