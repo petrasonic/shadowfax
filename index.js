@@ -83,11 +83,7 @@ router.use(function(req, res, next) {
     next();
 });
 router.post('/satdata', function(req, res){
-  // res.sendfile('./client/data.czml');
-  // return;
-  console.log('requesting:', req.body);
   var tlesToReturn = _.filter(availableTLEs, function(tle){return req.body.sats.indexOf(tle.name)!==-1;});
-  console.log(tlesToReturn)
   simulationResults = czmlFormatter.formatForSatellites(tlesToReturn, req.body.duration);
   res.json(simulationResults);
 });

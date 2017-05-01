@@ -31,7 +31,6 @@ var self = module.exports = {
     var colour = config.COLOURS[Math.floor(Math.random() * 5)]
     // Initialize a satellite record
     var satrec = satellite.satellite.twoline2satrec(tle.line1, tle.line2);
-    // var duration = 1*60*60;
     var points = [];
     for(var i=0;i<duration;i+=300){
       var positionAndVelocity = satellite.satellite.propagate(satrec, moment().add(i,'seconds').toDate());
@@ -101,6 +100,5 @@ var self = module.exports = {
       sat:cesiumElement,
       fov:cesiumElementForFOV
     };
-  },
-  // getSatIcon
+  }
 };
